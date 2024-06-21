@@ -1,7 +1,10 @@
 # capa de vista/presentación
 # si se necesita algún dato (lista, valor, etc), esta capa SIEMPRE se comunica con services_nasa_image_gallery.py
 
+from pyexpat.errors import messages
 from django.shortcuts import redirect, render
+
+from nasa_image_gallery.models import Favourite
 from .layers.services import services_nasa_image_gallery
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import logout
@@ -45,18 +48,36 @@ def search(request):
 # las siguientes funciones se utilizan para implementar la sección de favoritos: traer los favoritos de un usuario, guardarlos, eliminarlos y desloguearse de la app.
 @login_required
 def getAllFavouritesByUser(request):
-    favourite_list = []
+    favourite_list = Favourite.objects.filter(user=request.user)
     return render(request, 'favourites.html', {'favourite_list': favourite_list})
+
 
 
 @login_required
 def saveFavourite(request):
-    pass
-
+     if request.method == 'POST':
+        try:
+            saved_favourite = services_nasa_image_gallery.save_Favourite(request)
+            if saved_favourite:
+                return redirect('favoritos')  # Redirige a la vista de favoritos si el favorito se guarda correctamente
+            else:
+                messages.error(request, 'Error al guardar el favorito.')
+        except Exception as e:
+            messages.error(request, f'Error: {str(e)}')
+    
+        return redirect('home')
 
 @login_required
 def deleteFavourite(request):
-    pass
+    if request.method == "POST":
+        success = services_nasa_image_gallery.deleteFavourite(request)
+        if success: 
+            return redirect('favoritos')  # Redirigir a la lista de favoritos después de la eliminación exitosa
+        else:
+            messages.error(request, 'Error al guardar el favorito.')
+            return redirect('favoritos')  # Aquí redirigimos de todos modos, puedes personalizar esto.
+    else:
+        return redirect('favoritos')
 
 
 @login_required
