@@ -60,4 +60,3 @@ def deleteFavourite(request):
 
 
 
-####MODIFICACIONES*********
