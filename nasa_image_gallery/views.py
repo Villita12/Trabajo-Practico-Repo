@@ -3,7 +3,6 @@
 
 from pyexpat.errors import messages
 from django.shortcuts import redirect, render
-
 from nasa_image_gallery.models import Favourite
 from .layers.services import services_nasa_image_gallery
 from django.contrib.auth.decorators import login_required
@@ -27,8 +26,8 @@ def home(request):
     # (*) este último, solo si se desarrolló el opcional de favoritos; caso contrario, será un listado vacío [].
     images = []
     favourite_list = []
-    images, favourite_list = getAllImagesAndFavouriteList(request)
     images = services_nasa_image_gallery.getAllImages()   
+    favourite_list = getAllImagesAndFavouriteList(request)    
     return render(request, 'home.html', {'images': images, 'favourite_list': favourite_list} )
 
 
@@ -75,7 +74,7 @@ def deleteFavourite(request):
             return redirect('favoritos')  # Redirigir a la lista de favoritos después de la eliminación exitosa
         else:
             messages.error(request, 'Error al guardar el favorito.')
-            return redirect('favoritos')  # Aquí redirigimos de todos modos, puedes personalizar esto.
+            return redirect('favoritos')  # Aquí redirigimos de todos modos.
     else:
         return redirect('favoritos')
 

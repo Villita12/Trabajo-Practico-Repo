@@ -4,8 +4,6 @@ from ..transport import transport
 from ..dao import repositories
 from ..generic import mapper
 from django.contrib.auth import get_user
-from django.contrib.auth.decorators import login_required
-from django.shortcuts import render
 
 
 def getAllImages(input=None):
